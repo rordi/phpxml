@@ -16,7 +16,7 @@ class XmlParser
     private $dictionary;
 
     /** @var array */
-    private $callbacks;
+    private $callbacks = [];
 
 
     /*
@@ -288,6 +288,11 @@ class XmlParser
                 unset($arr[$key]);
                 $arr[$key] = null;
             }
+        }
+
+        if(is_array($arr) && count($arr)==1)
+        {
+            $arr = array_values($arr)[0];
         }
         return $arr;
     }
