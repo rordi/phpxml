@@ -15,6 +15,8 @@ class XmlParser
     /** @var array  */
     private $dictionary;
 
+    /** @var array */
+    private $callbacks;
 
 
     /*
@@ -45,6 +47,17 @@ class XmlParser
     public function setDictionary($dictionary)
     {
         $this->dictionary = $dictionary;
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param callable $callback
+     * @return XmlParser
+     */
+    public function addCallback($name, callable $callback)
+    {
+        $this->callbacks[$name] = $callback;
         return $this;
     }
 
@@ -112,63 +125,75 @@ class XmlParser
             if(isset($properties['process']))
             {
                 $val = null;
-                switch($properties['process'])
+
+                if(is_callable($properties['process'])) // $properties['process'] is a callback
                 {
-                    //sub-parse node (or node list) with defined sub-dictionary
-                    case 'parse':
-                        if(get_class($nodes) == 'DOMNodeList')
-                        {
-                            $val = array();
-                            foreach($nodes as $node)
+                    $val = $properties['process']($nodes);
+                }
+                elseif(array_key_exists($properties['process'], $this->callbacks)) // $properties['process'] was registered as a callback
+                {
+                    $val = $this->callbacks[$properties['process']]($nodes);
+                }
+                else // a few common callbacks
+                {
+                    switch($properties['process'])
+                    {
+                        //sub-parse node (or node list) with defined sub-dictionary
+                        case 'parse':
+                            if(get_class($nodes) == 'DOMNodeList')
                             {
-                                // $val[] = $this->_parse_xml($doc, $properties['dictionary'], $node);
-                                $parser = new XmlParser($properties['dictionary']);
-                                $val[] = $parser->parse($doc, $node);
+                                $val = array();
+                                foreach($nodes as $node)
+                                {
+                                    // $val[] = $this->_parse_xml($doc, $properties['dictionary'], $node);
+                                    $parser = new XmlParser($properties['dictionary']);
+                                    $val[] = $parser->parse($doc, $node);
+                                }
                             }
-                        }
-                        elseif(get_class($nodes) == 'DOMNode')
-                        {
-                            // $val = $this->_parse_xml($doc, $properties['dictionary'], $nodes);
-                            $parser = new XmlParser($properties['dictionary']);
-                            $val[] = $parser->parse($doc, $nodes);
-                        }
-                        else
-                        {
-                            error_log("WARNING: Skipping unexpected type " . get_class($nodes) . " - expected DOMNode or DOMNodeList, got: " . var_export($nodes), 0);
-                        }
-                        break;
+                            elseif(get_class($nodes) == 'DOMNode')
+                            {
+                                // $val = $this->_parse_xml($doc, $properties['dictionary'], $nodes);
+                                $parser = new XmlParser($properties['dictionary']);
+                                $val[] = $parser->parse($doc, $nodes);
+                            }
+                            else
+                            {
+                                error_log("WARNING: Skipping unexpected type " . get_class($nodes) . " - expected DOMNode or DOMNodeList, got: " . var_export($nodes), 0);
+                            }
+                            break;
 
-                    //force value to be a boolean
-                    case 'bool':
-                        if(get_class($nodes) == 'DOMNodeList')
-                        {
-                            $val = ($nodes->item(0)->nodeValue == 'true' || $nodes->item(0)->nodeValue == 1) ? true : false;
-                        }
-                        elseif(get_class($nodes) == 'DOMNode')
-                        {
-                            $val = ($nodes->nodeValue === true || $nodes->nodeValue === 'true' || $nodes->nodeValue === 1) ? true : false;
-                        }
-                        else
-                        {
-                            $val = false;
-                        }
-                        break;
+                        //force value to be a boolean
+                        case 'bool':
+                            if(get_class($nodes) == 'DOMNodeList')
+                            {
+                                $val = ($nodes->item(0)->nodeValue == 'true' || $nodes->item(0)->nodeValue == 1) ? true : false;
+                            }
+                            elseif(get_class($nodes) == 'DOMNode')
+                            {
+                                $val = ($nodes->nodeValue === true || $nodes->nodeValue === 'true' || $nodes->nodeValue === 1) ? true : false;
+                            }
+                            else
+                            {
+                                $val = false;
+                            }
+                            break;
 
-                    //convert datetime string to DateTime object
-                    case 'datetime':
-                        if(get_class($nodes) == 'DOMNodeList')
-                        {
-                            $val = new \DateTime($nodes->item(0)->nodeValue);
-                        }
-                        elseif(get_class($nodes) == 'DOMNode')
-                        {
-                            $val = new \DateTime($nodes->nodeValue);
-                        }
-                        else
-                        {
-                            $val = null;
-                        }
-                        break;
+                        //convert datetime string to DateTime object
+                        case 'datetime':
+                            if(get_class($nodes) == 'DOMNodeList')
+                            {
+                                $val = new \DateTime($nodes->item(0)->nodeValue);
+                            }
+                            elseif(get_class($nodes) == 'DOMNode')
+                            {
+                                $val = new \DateTime($nodes->nodeValue);
+                            }
+                            else
+                            {
+                                $val = null;
+                            }
+                            break;
+                    }
                 }
                 $val = $this->_flatten_array($val);
                 array_push($metadata[$key], $val);
