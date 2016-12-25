@@ -1,0 +1,25 @@
+{
+	"name" : "rordi/phpxml",
+	"description" : "PHP XML Parser Class",
+	"authors" : [{
+			"name" : "Dietrich Rordorf",
+			"email" : "dr@ediqo.com"
+		}
+	],
+	"keywords" : ["php","xml","parsing","mapping"],
+	"homepage" : "https://github.com/rordi/phpxml",
+	"license" : [
+		"MIT"
+	],
+	"require" : {
+		"php" : ">=5.6"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : ">=5.3"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"Rordi\\" : "src/"
+		}
+	}
+}
