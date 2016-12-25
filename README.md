@@ -12,12 +12,14 @@ phpxml provides a conveninant interface to query and map XML documents loaded in
 
 Edit your composer.json file to add the GitHub repository:
 
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/rordi/phpxml.git"
-        }
-    ],
+~~~~ 
+"repositories": [
+    {
+        "type": "git",
+        "url": "https://github.com/rordi/phpxml.git"
+    }
+],
+~~~~ 
     
 Then, add phpxml as a dependency to your project:
 ~~~~ 
@@ -47,61 +49,60 @@ Initiate a new XmlParser with your dictionary.
 Given the following XML file:
 
 ~~~~ 
-  <document>
-    <type class="article" />
-    <title lang="en">A simple title</title>
-    <title lang="de">Ein einfacher Title</title>
-    <authors>
-      <author role="main">
-        <first>Firstname</first>
-        <last>Lastname</last>
-      </author>
-      <author role="secondary">
-        <first>Firstname 2</first>
-        <last>Lastname 2</last>
-      </author>
-    </authors>
-    <body>
-      ...
-    </body>
-  </document>
+<document>
+  <type class="article" />
+  <title lang="en">A simple title</title>
+  <title lang="de">Ein einfacher Title</title>
+  <authors>
+    <author role="main">
+      <first>Firstname</first>
+      <last>Lastname</last>
+    </author>
+    <author role="secondary">
+      <first>Firstname 2</first>
+      <last>Lastname 2</last>
+    </author>
+  </authors>
+  <body>
+  This is the body of the article.
+  </body>
+</document>
 ~~~~ 
 
 You can produce the following associative array:
 
 ~~~~ 
-  [
-    'type' => 'article',
-    'title' => 'A simple title',
-    'main_author' => [
-      'givenname' => 'Firstname',
-      'surname' => 'Lastname'
-    ]
+[
+  'type' => 'article',
+  'title' => 'A simple title',
+  'main_author' => [
+    'givenname' => 'Firstname',
+    'surname' => 'Lastname'
   ]
+]
 ~~~~ 
 
 With the following dictionary:
 
 ~~~~ 
-
-  $dic = [
-    'type' => [
-      'xpath' => '/document/type/@class'
-    ].
-    'title' => [
-      'xpath' => "//title[@lang='en']"
-    ],
-    'main_author' => [
-      'xpath' => "//author[@type='main']",
-      'process' => 'parse',
-      'dictionary' => [
-        'givenname' => [
-          'xpath' => './/firstname',
-        ],
-        'surname' => [
-          'xpath' => './/lastname',
-        ],
-      ]
-    ],
-  ];
+$dictionary = [
+  'type' => [
+    'xpath' => '/document/type/@class'
+  ],
+  'title' => [
+    'xpath' => "//title[@lang='en']"
+  ],
+  'main_author' => [
+    'xpath' => "//authors/author[@role='main']",
+    'process' => 'parse',
+    'dictionary' => [
+      'givenname' => [
+        'xpath' => './first',
+      ],
+      'surname' => [
+        'xpath' => './last',
+      ],
+    ]
+  ],
+];
 ~~~~ 
