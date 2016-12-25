@@ -133,7 +133,7 @@ class XmlParser
                         $val = [];
                         foreach($nodes as $node)
                         {
-                            $val = $properties['process']($nodes);
+                            $val = $properties['process']($node);
                         }
                     }
                     else
@@ -148,7 +148,7 @@ class XmlParser
                         $val = [];
                         foreach($nodes as $node)
                         {
-                            $val = $this->callbacks[$properties['process']]($nodes);
+                            $val = $this->callbacks[$properties['process']]($node);
                         }
                     }
                     else
