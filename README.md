@@ -44,7 +44,7 @@ Initiate a new XmlParser with your dictionary.
 ~~~~ 
 
 
-## Creating a Dictionary
+## Creating a dictionary
 
 Given the following XML file:
 
@@ -106,3 +106,48 @@ $dictionary = [
   ],
 ];
 ~~~~ 
+
+## Creating your own Parsers
+
+Instead of setting the dictionary at runtime, you can easily create your own parsers that encapsulate the parsing logic and keeping your code clean. Simply write your own parser, which extends the XmlParser, and set it's dictionary in the __construct() method:
+
+#### Exmaple Parser
+
+~~~~ 
+namespace App;
+
+use Rordi\PhpXml\XmlParser;
+
+class MyParser extends XmlParser 
+{
+    public function __construct()
+    {
+        $dictionary = [
+            // your parser-specific dictionary
+        ];
+        parent::__construct($dictionary);
+    }
+}
+~~~~ 
+
+~~~~ 
+    use App\MyParser;
+    ...
+    $myparser = new MyParser();
+    $data = $myparser->parse($doc);
+~~~~ 
+
+## Working with callbacks
+
+Often, when serializing or unserializing data, you may wish to e.g. instantiate a new DateTime from a date string, or force a value to be boolean or float, etc. To do this, you can work with callbacks in XmlParser.
+
+In your dictionary, you can pass a callback through the field 'process'. XmlParser already includes the following callbacks: 'parse', 'datetime' and 'bool'. 'parse' will call the parser's parse_xml() method for the selected DOMNode (or DOMNodeList) and process it with the 'dictionary' (see 'main_author' in the above example dictionary). 
+
+You can register your own callbacks with your parser:
+
+~~~~ 
+$parser = new XmlParser();
+$parser->registerCallback('mytest', function($node) { $val = $node->nodeValue; /* some processing here */ return $val; });
+~~~~ 
+
+And then use your registered callback in the dictionary as 'process' => 'mytest'. 
