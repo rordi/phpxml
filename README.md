@@ -151,3 +151,15 @@ $parser->registerCallback('mytest', function($node) { $val = $node->nodeValue; /
 ~~~~ 
 
 And then use your registered callback in the dictionary as 'process' => 'mytest'. 
+
+You can make your callback to work with $node (single DOMNode) or with $nodes (DOMNodeList). Simply name the callback's paramter accordingly.
+
+~~~~ 
+function($node) {
+    // I expect a single DOMNode
+}
+
+function($nodes) {
+    // I expect a DOMNodeList to e.g.
+}
+~~~~ 
