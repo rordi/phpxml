@@ -121,39 +121,53 @@ class XmlParser
                 }
             }
 
-            //STEP 2: process matched DOM nodes with sub-routines
+            //STEP 2: process matched DOM nodes with callback
             if(isset($properties['process']))
             {
                 $val = null;
 
                 if(is_callable($properties['process'])) // $properties['process'] is a callback
                 {
-                    if(get_class($nodes) == 'DOMNodeList')
+                    if($this->_callback_expects_nodelist($properties['process']))
                     {
-                        $val = [];
-                        foreach($nodes as $node)
-                        {
-                            $val = $properties['process']($node);
-                        }
+                        $val = $properties['process']($nodes);
                     }
                     else
                     {
-                        $val = $properties['process']($nodes);
+                        if(get_class($nodes) == 'DOMNodeList')
+                        {
+                            $val = [];
+                            foreach($nodes as $node)
+                            {
+                                $val = $properties['process']($node);
+                            }
+                        }
+                        else
+                        {
+                            $val = $properties['process']($nodes);
+                        }
                     }
                 }
                 elseif(array_key_exists($properties['process'], $this->callbacks)) // $properties['process'] was registered as a callback
                 {
-                    if(get_class($nodes) == 'DOMNodeList')
+                    if($this->_callback_expects_nodelist( $this->callbacks[$properties['process']] ))
                     {
-                        $val = [];
-                        foreach($nodes as $node)
-                        {
-                            $val = $this->callbacks[$properties['process']]($node);
-                        }
+                        $val = $this->callbacks[$properties['process']]($nodes);
                     }
                     else
                     {
-                        $val = $this->callbacks[$properties['process']]($nodes);
+                        if(get_class($nodes) == 'DOMNodeList')
+                        {
+                            $val = [];
+                            foreach($nodes as $node)
+                            {
+                                $val = $this->callbacks[$properties['process']]($node);
+                            }
+                        }
+                        else
+                        {
+                            $val = $this->callbacks[$properties['process']]($nodes);
+                        }
                     }
                 }
                 else // a few common callbacks
@@ -319,6 +333,26 @@ class XmlParser
             $arr = array_values($arr)[0];
         }
         return $arr;
+    }
+
+
+    /**
+     * @param $callback
+     * @return bool
+     */
+    private function _callback_expects_nodelist($callback)
+    {
+        $cref = new \ReflectionFunction($callback);
+        $params = $cref->getParameters();
+        if(count($params) > 0)
+        {
+            $param = array_values($params)[0];
+            if($param->name == 'nodes')
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
 
