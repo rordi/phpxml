@@ -220,11 +220,52 @@ class XmlParser
                         case 'datetime':
                             if(get_class($nodes) == 'DOMNodeList')
                             {
-                                $val = new \DateTime($nodes->item(0)->nodeValue);
+                                $val = [];
+                                foreach ($nodes as $node)
+                                {
+                                    $val = new \DateTime($node->nodeValue);
+                                }
                             }
                             elseif(get_class($nodes) == 'DOMNode')
                             {
                                 $val = new \DateTime($nodes->nodeValue);
+                            }
+                            else
+                            {
+                                $val = null;
+                            }
+                            break;
+
+                        case 'merge':
+                        case 'merge_comma':
+                        case 'merge_semicolon':
+                        case 'merge_point':
+                            switch($properties['process'])
+                            {
+                                case 'merge_comma':
+                                    $separator = ', ';
+                                    break;
+                                case 'merge_semicolon':
+                                    $separator = '; ';
+                                    break;
+                                case 'merge_point':
+                                    $separator = '. ';
+                                    break;
+                                default:
+                                    $separator = ' ';
+                            }
+                            if(get_class($nodes) == 'DOMNodeList')
+                            {
+                                $val = [];
+                                foreach($nodes as $node) {
+                                    $val[] = $node->nodeValue;
+                                }
+                                $val = implode($separator, $val);
+                                trim($val);
+                            }
+                            elseif(get_class($nodes) == 'DOMNode')
+                            {
+                                $val = $nodes->nodeValue;
                             }
                             else
                             {
