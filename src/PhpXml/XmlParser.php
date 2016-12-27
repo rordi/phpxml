@@ -258,7 +258,7 @@ class XmlParser
                             {
                                 $val = [];
                                 foreach($nodes as $node) {
-                                    $val[] = $node->nodeValue;
+                                    $val[] = trim($node->nodeValue);
                                 }
                                 $val = implode($separator, $val);
                                 trim($val);
@@ -369,9 +369,14 @@ class XmlParser
             }
         }
 
+
         if(is_array($arr) && count($arr)==1)
         {
-            $arr = array_values($arr)[0];
+            $keys = array_keys($arr);
+            if(!is_string($keys[0])) // keep named arrays
+            {
+                $arr = array_values($arr)[0];
+            }
         }
         return $arr;
     }
