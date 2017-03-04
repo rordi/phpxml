@@ -160,6 +160,6 @@ function($node) {
 }
 
 function($nodes) {
-    // I expect a DOMNodeList to e.g.
+    // I expect a DOMNodeList, e.g. to loop as in foreach($nodes as $node) { ... }
 }
 ~~~~ 
