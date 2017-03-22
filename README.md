@@ -43,6 +43,15 @@ Initiate a new XmlParser with your dictionary.
   $data = $parser->parse($doc);   // $doc is a DOMDocument
 ~~~~ 
 
+The following code snippet will be helpful to instantiate a DOMDocument object from possibly invalid XML:
+
+~~~~
+//load xml file into DOM
+$doc = new DOMDocument();
+$doc->strictErrorChecking = false;
+@$doc->load($path_to_file);
+~~~~
+
 
 ## Creating a dictionary
 
@@ -111,7 +120,7 @@ $dictionary = [
 
 Instead of setting the dictionary at runtime, you can easily create your own parsers that encapsulate the parsing logic and keeping your code clean. Simply write your own parser, which extends the XmlParser, and set it's dictionary in the __construct() method:
 
-#### Exmaple Parser
+#### Example Parser
 
 ~~~~ 
 namespace App;
