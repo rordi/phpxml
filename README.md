@@ -52,6 +52,16 @@ $doc->strictErrorChecking = false;
 @$doc->load($path_to_file);
 ~~~~
 
+The following code snippet will be helpful to instantiate a DOMDocument from an XML string:
+
+~~~~
+//instantiate DOM from xml
+$xml = "<my>xml</my>";
+$doc = new DOMDocument();
+$doc->strictErrorChecking = false;
+@$doc->loadXML($path_to_file);
+~~~~
+
 
 ## Creating a dictionary
 
