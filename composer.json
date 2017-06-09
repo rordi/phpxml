@@ -18,8 +18,13 @@
 		"phpunit/phpunit" : ">=5.3"
 	},
 	"autoload" : {
+		"psr-0": {
+			"Rordi\\PhpXml": "src/PhpXml",
+			"Rordi\\Tests": "tests/"
+		},
 		"psr-4" : {
-			"Rordi\\" : "src/"
+			"Rordi\\PhpXml": "src/PhpXml",
+			"Rordi\\Tests": "tests/"
 		}
 	}
 }

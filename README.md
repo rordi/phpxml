@@ -43,6 +43,25 @@ Initiate a new XmlParser with your dictionary.
   $data = $parser->parse($doc);   // $doc is a DOMDocument
 ~~~~ 
 
+The following code snippet will be helpful to instantiate a DOMDocument object from possibly invalid XML:
+
+~~~~
+//load xml file into DOM
+$doc = new DOMDocument();
+$doc->strictErrorChecking = false;
+@$doc->load($path_to_file);
+~~~~
+
+The following code snippet will be helpful to instantiate a DOMDocument from an XML string:
+
+~~~~
+//instantiate DOM from xml
+$xml = "<my>xml</my>";
+$doc = new DOMDocument();
+$doc->strictErrorChecking = false;
+@$doc->loadXML($path_to_file);
+~~~~
+
 
 ## Creating a dictionary
 
@@ -111,7 +130,7 @@ $dictionary = [
 
 Instead of setting the dictionary at runtime, you can easily create your own parsers that encapsulate the parsing logic and keeping your code clean. Simply write your own parser, which extends the XmlParser, and set it's dictionary in the __construct() method:
 
-#### Exmaple Parser
+#### Example Parser
 
 ~~~~ 
 namespace App;
@@ -151,3 +170,15 @@ $parser->registerCallback('mytest', function($node) { $val = $node->nodeValue; /
 ~~~~ 
 
 And then use your registered callback in the dictionary as 'process' => 'mytest'. 
+
+You can make your callback to work with $node (single DOMNode) or with $nodes (DOMNodeList). Simply name the callback's paramter accordingly.
+
+~~~~ 
+function($node) {
+    // I expect a single DOMNode
+}
+
+function($nodes) {
+    // I expect a DOMNodeList, e.g. to loop as in foreach($nodes as $node) { ... }
+}
+~~~~ 
