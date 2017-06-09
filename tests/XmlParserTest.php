@@ -6,6 +6,9 @@
  * @since  12/2016
  */
 
+namespace Rordi\Tests;
+
+use Rordi\PhpXml\XmlParser;
 
 class XmlParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +29,12 @@ class XmlParserTest extends \PHPUnit_Framework_TestCase
                 </author>
             </authors>
             <body>
-                This is the body of the article.
+                <chapters>
+                    <chapter>
+                        <title>Chapter 1</title>
+                        <content>This is the body of the article.</content>
+                    </chapter>
+                </chapters>
             </body>
         </document>
     ';
@@ -50,6 +58,16 @@ class XmlParserTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         ],
+        'chapters' => [
+            'xpath' => "//document/body/chapters/chapter",
+            'flatten' => false,
+            'process' => 'parse',
+            'dictionary' => [
+                'title' => [
+                    'xpath' => './title',
+                ],
+            ]
+        ]
     ];
 
     private $expected =   [
@@ -58,6 +76,11 @@ class XmlParserTest extends \PHPUnit_Framework_TestCase
         'main_author' => [
             'givenname' => 'Firstname',
             'surname' => 'Lastname'
+        ],
+        'chapters' => [
+            0 => [
+                'title' => 'Chapter 1'
+            ]
         ]
     ];
 
@@ -68,9 +91,15 @@ class XmlParserTest extends \PHPUnit_Framework_TestCase
         $doc->strictErrorChecking = false;
         $doc->loadXML($this->xml);
 
-        $parser = new \Rordi\PhpXml\XmlParser();
+        $parser = new XmlParser();
         $parser->setDictionary($this->dictionary);
         $data = $parser->parse($doc);
+
+        var_dump($data);
+        ob_flush();
+        exit;
+
+
 
         $this->assertSame($this->expected, $data);
     }
