@@ -23,8 +23,8 @@
 			"Rordi\\Tests": "tests/"
 		},
 		"psr-4" : {
-			"Rordi\\PhpXml": "src/PhpXml",
-			"Rordi\\Tests": "tests/"
+			"Rordi\\PhpXml\\": "src/PhpXml",
+			"Rordi\\Tests\\": "tests/"
 		}
 	}
 }
