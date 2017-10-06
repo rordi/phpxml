@@ -182,3 +182,7 @@ function($nodes) {
     // I expect a DOMNodeList, e.g. to loop as in foreach($nodes as $node) { ... }
 }
 ~~~~ 
+
+## TBD
+
+Allow to save the dictionary configuration as YAML and provide a configuration reader
